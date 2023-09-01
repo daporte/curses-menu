@@ -91,3 +91,4 @@ class SubmenuItem(MenuItem):
         if self.submenu is not None:
             return self.submenu.returned_value
         return None
+

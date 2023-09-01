@@ -119,8 +119,8 @@ class CursesMenu:
         self.user_input_handlers.update(
             {
                 ord("\n"): self.select,
-                curses.KEY_UP: self.go_up,
-                curses.KEY_DOWN: self.go_down,
+                ord("k"): self.go_up,
+                ord("j"): self.go_down,
                 ord("q"): self.go_to_exit,
                 curses.KEY_RESIZE: self.on_resize,
             },
@@ -171,6 +171,37 @@ class CursesMenu:
             )
         return menu
 
+    @classmethod
+    def make_custom_menu(
+        cls,
+        item_class,
+        selections: list[str],
+        audio_dir,
+        title: str = "",
+        subtitle: str = "",
+        *,
+        show_exit_item: bool = False,
+    ) -> CursesMenu:
+        """
+        Create a menu from a list of strings.
+
+        The return value of the menu will be an index into the list of strings.
+
+        :param selections: A list of strings to be selected from
+        :param title: The title of the menu
+        :param subtitle: The subtitle of the menu
+        :param show_exit_item: If the exit item should be shown.\
+        If it is  and the user selects it, the return value will be None
+        :return: A CursesMenu with items for each selection
+        """
+        menu = cls(title=title, subtitle=subtitle, show_exit_item=show_exit_item)
+        from cursesmenu.items.selection_item import SelectionItem
+
+        for index, selection in enumerate(selections):
+            menu.items.append(
+                item_class(text=selection, custom_data=selection, container_menu=menu, idx=index, audio_dir=audio_dir),
+            )
+        return menu
     @classmethod
     def get_selection(
         cls,
@@ -556,3 +587,4 @@ class CursesMenu:
     def __repr__(self) -> str:
         """Get a string representation of the menu."""
         return f"<{self.title}: {self.subtitle}. {len(self.items)} items>"
+
